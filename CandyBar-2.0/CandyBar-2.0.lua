@@ -1,10 +1,10 @@
 --[[
 Name: CandyBar-2.0
-Revision: $Rev: 154 $
-Author: Ammo (wouter@muze.nl)
-Website: http://www.wowace.com/
-Documentation: http://www.wowace.com/
-SVN: svn://svn.wowace.com/wowace/trunk/CandyBar/CandyBar-2.0
+Revision: 16000
+Author: Ammo (wouter@muze.nl) 
+Backport to vanilla: laytya (@gmail.com)
+Website: https://github.com/laytya/LibCandyBar/
+Documentation: http://web.archive.org/web/20070314234510/http://wowace.com/wiki/CandyBar-2.0
 Description: A timer bars library.
 Dependencies: AceLibrary, AceOO-2.0, PaintChips-2.0
 ]]
