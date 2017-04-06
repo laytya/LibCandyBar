@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceOO-2.0, PaintChips-2.0
 ]]
 local match = string.match
 local getn,setn = table.getn, table.setn
-local vmajor, vminor = "CandyBar-2.0", "$Revision: 16000 $" --90000 + tonumber(match(("$Revision: 154 $"),"(%d+)"))
+local vmajor, vminor = "CandyBar-2.0", "$Revision: 16000 $" 
 
 if not AceLibrary then error(vmajor .. " requires AceLibrary.") end
 if not AceLibrary:IsNewVersion(vmajor, vminor) then return end
@@ -500,7 +500,7 @@ function CandyBar:SetGradient(name, c1, c2, ...)
 	if not cachedgradient[gradientid] then
 		cachedgradient[gradientid] = {}
 	end
---	Sea.io.printTable2(handler.gradienttable,"handler.gradienttable",3)
+	--Sea.io.printTable2(handler.gradienttable,"handler.gradienttable",3)
 	handler.frame.statusbar:SetStatusBarColor(unpack(gtable[1], 1, 4))
 	return true
 end
@@ -558,9 +558,7 @@ function CandyBar:SetColor(name, color, alpha, b, a)
 	end
 	handler.color = t
 	handler.gradient = nil
-	
-	--Sea.io.printTable(t,"SetColor t=")
-	
+
 	handler.frame.statusbar:SetStatusBarColor(unpack(t, 1, 4))
 	return true
 end
@@ -584,9 +582,6 @@ function CandyBar:SetBackgroundColor(name, color, alpha, b, a)
 		handler.bgcolor = del(handler.bgcolor)
 	end
 	handler.bgcolor = t
-	
-	
-	
 	handler.frame.statusbarbg:SetStatusBarColor(unpack(t, 1, 4))
 
 	return true
@@ -891,8 +886,7 @@ function CandyBar:SetCompletion(name, func, ...)
 	return true
 end
 
-local function onClick(...)
-	
+local function onClick()
 	CandyBar:OnClick()
 end
 
@@ -1369,8 +1363,6 @@ function CandyBar:GetNextBarPointInGroup(name)
 	return xoffset, yoffset + (m * bar)
 end
 
-CBUgradient = nil
-
 -- Internal Method
 -- Update a bar on screen
 function CandyBar:Update(name)
@@ -1437,10 +1429,6 @@ function CandyBar:Update(name)
 			end
 		end
 		if cachedgradient[handler.gradientid][p] then
-		
-		CBUgradient={unpack(cachedgradient[handler.gradientid][p], 1, 4)}
-		CBUgradient["p"] = p
-		
 			handler.frame.statusbar:SetStatusBarColor(unpack(cachedgradient[handler.gradientid][p], 1, 4))
 		end
 	end
@@ -1660,7 +1648,6 @@ end
 -- Internal Method
 -- Executes the OnClick function of a bar
 function CandyBar:OnClick()
-	--Sea.io.printTable({arg1,arg2})
 	if not this.owner then
 		return
 	end
