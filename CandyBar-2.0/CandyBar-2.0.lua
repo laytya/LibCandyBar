@@ -117,7 +117,10 @@ local function setArgs(t, str, ...)
 end
 
 local new, del
-do
+if  AceLibrary:HasInstance("Compost-2.0") then
+	new =  AceLibrary("Compost-2.0").Acquire 
+	del =  AceLibrary("Compost-2.0").Reclaim
+else
 	local list = setmetatable({}, {__mode = "k"})
 	function new()
 		local t = next(list)
@@ -408,7 +411,7 @@ end
 -- Args: name - the candybar name
 --	   c1 - c10 color order of the gradient
 -- returns true when succesful
-local cachedgradient = {}
+local cachedgradient = new() 
 function CandyBar:SetGradient(name, c1, c2, ...)
 	CandyBar:argCheck(name, 2, "string")
 	CandyBar:argCheck(c1, 3, "string", "number", "nil")
@@ -449,7 +452,7 @@ function CandyBar:SetGradient(name, c1, c2, ...)
 				break
 			end
 			gmax = gmax + 1
-			gtable[gmax] = {}
+			gtable[gmax] = new() 
 			local _
 			_, gtable[gmax][1], gtable[gmax][2], gtable[gmax][3] = paint:GetRGBPercent(c)
 			gradientid = gradientid .. "_" .. c
@@ -498,7 +501,7 @@ function CandyBar:SetGradient(name, c1, c2, ...)
 	handler.gradient = true
 	handler.gradientid = gradientid
 	if not cachedgradient[gradientid] then
-		cachedgradient[gradientid] = {}
+		cachedgradient[gradientid] = new() 
 	end
 	--Sea.io.printTable2(handler.gradienttable,"handler.gradienttable",3)
 	handler.frame.statusbar:SetStatusBarColor(unpack(gtable[1], 1, 4))
@@ -1421,7 +1424,7 @@ function CandyBar:Update(name)
 			end
 			if gstart and gend then
 				-- calculate new gradient
-				cachedgradient[handler.gradientid][p] = {} --new()
+				cachedgradient[handler.gradientid][p] = new() 
 				for i = 1, 4 do
 					-- these may be the same.. but I'm lazy to make sure.
 					cachedgradient[handler.gradientid][p][i] = gstart[i]*(1-gp) + gend[i]*(gp)
