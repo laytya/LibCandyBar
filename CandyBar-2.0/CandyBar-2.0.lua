@@ -517,7 +517,7 @@ local function setColor(color, alpha, b, a)
 			return
 		end
 		CandyBar:argCheck(alpha, 4, "number", "nil")
-		ctable = new()
+		ctable = {}
 		local _
 		_, ctable[1], ctable[2], ctable[3] =  paint:GetRGBPercent(color)
 		if alpha then
@@ -529,7 +529,7 @@ local function setColor(color, alpha, b, a)
 		CandyBar:argCheck(alpha, 4, "number")
 		CandyBar:argCheck(b, 5, "number")
 		CandyBar:argCheck(a, 6, "number", "nil")
-		ctable = new()
+		ctable = {}
 		ctable[1], ctable[2], ctable[3] = color, alpha, b
 		if a then
 			ctable[4] = a
