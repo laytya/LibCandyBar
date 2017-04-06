@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceOO-2.0, PaintChips-2.0
 ]]
 local match = string.match
 local getn,setn = table.getn, table.setn
-local vmajor, vminor = "CandyBar-2.0", "$Revision: 16000 $" 
+local vmajor, vminor = "CandyBar-2.0", "$Revision: 16002 $" 
 
 if not AceLibrary then error(vmajor .. " requires AceLibrary.") end
 if not AceLibrary:IsNewVersion(vmajor, vminor) then return end
@@ -18,7 +18,9 @@ if not AceLibrary:IsNewVersion(vmajor, vminor) then return end
 if not AceLibrary:HasInstance("AceOO-2.0") then error(vmajor .. " requires AceOO-2.0") end
 --if not AceLibrary:HasInstance("PaintChips-2.0") then error(vmajor .. " requires PaintChips-2.0") end
 
-local paint = nil
+local paint,compost = nil,nil
+
+if AceLibrary:HasInstance("Compost-2.0") then compost = AceLibrary:GetInstance("Compost-2.0") end
 
 local AceOO = AceLibrary:GetInstance("AceOO-2.0")
 local Mixin = AceOO.Mixin
@@ -117,9 +119,9 @@ local function setArgs(t, str, ...)
 end
 
 local new, del
-if  AceLibrary:HasInstance("Compost-2.0") then
-	new =  AceLibrary("Compost-2.0").Acquire 
-	del =  AceLibrary("Compost-2.0").Reclaim
+if  compost then
+	new =  function() return compost:Acquire() end 
+	del =  function(t) compost:Reclaim(t) end
 else
 	local list = setmetatable({}, {__mode = "k"})
 	function new()
@@ -443,11 +445,8 @@ function CandyBar:SetGradient(name, c1, c2, ...)
 		_, gtable[1][1], gtable[1][2], gtable[1][3] =  paint:GetRGBPercent(c1)
 		_, gtable[2][1], gtable[2][2], gtable[2][3] =  paint:GetRGBPercent(c2)
 		gmax  = 2
-		
---		Sea.io.printTable(gtable,"gtable->")
-		for i = 1, getn(arg) do --select('#', ...) do
-			local c = arg[i] --select(i, ...)
---			Sea.io.print("arg[",i,"]=",c)
+		for i = 1, getn(arg) do 
+			local c = arg[i] 
 			if not c or not paint:GetRGBPercent(c) then
 				break
 			end
@@ -503,7 +502,6 @@ function CandyBar:SetGradient(name, c1, c2, ...)
 	if not cachedgradient[gradientid] then
 		cachedgradient[gradientid] = new() 
 	end
-	--Sea.io.printTable2(handler.gradienttable,"handler.gradienttable",3)
 	handler.frame.statusbar:SetStatusBarColor(unpack(gtable[1], 1, 4))
 	return true
 end
@@ -1410,7 +1408,8 @@ function CandyBar:Update(name)
 
 	if handler.gradient then
 		local p = floor( (handler.elapsed / handler.time) * 100 ) / 100
-		if not cachedgradient[handler.gradientid][p] then
+		local currentGradient = cachedgradient[handler.gradientid][p]
+		if currentGradient==nil then
 			-- find the appropriate start/end
 			local gstart, gend, gp
 			for i = 1, getn(handler.gradienttable) - 1 do
@@ -1424,15 +1423,16 @@ function CandyBar:Update(name)
 			end
 			if gstart and gend then
 				-- calculate new gradient
-				cachedgradient[handler.gradientid][p] = new() 
+				currentGradient = {0,0,0,0}
 				for i = 1, 4 do
 					-- these may be the same.. but I'm lazy to make sure.
-					cachedgradient[handler.gradientid][p][i] = gstart[i]*(1-gp) + gend[i]*(gp)
+					currentGradient[i] = gstart[i]*(1-gp) + gend[i]*(gp)
 				end
+				cachedgradient[handler.gradientid][p] = currentGradient
 			end
 		end
-		if cachedgradient[handler.gradientid][p] then
-			handler.frame.statusbar:SetStatusBarColor(unpack(cachedgradient[handler.gradientid][p], 1, 4))
+		if currentGradient~=nil then
+			handler.frame.statusbar:SetStatusBarColor(unpack(currentGradient))
 		end
 	end
 end
