@@ -1,6 +1,6 @@
 --[[
 Name: CandyBar-2.0
-Revision: 16000
+Revision: 16003
 Author: Ammo (wouter@muze.nl) 
 Backport to vanilla: laytya (@gmail.com)
 Website: https://github.com/laytya/LibCandyBar/
@@ -9,8 +9,8 @@ Description: A timer bars library.
 Dependencies: AceLibrary, AceOO-2.0, PaintChips-2.0
 ]]
 local match = string.match
-local getn,setn = table.getn, table.setn
-local vmajor, vminor = "CandyBar-2.0", "$Revision: 16002 $" 
+local getn,setn,tinsert = table.getn, table.setn,table.insert
+local vmajor, vminor = "CandyBar-2.0", "$Revision: 16003 $" 
 
 if not AceLibrary then error(vmajor .. " requires AceLibrary.") end
 if not AceLibrary:IsNewVersion(vmajor, vminor) then return end
@@ -508,7 +508,8 @@ end
 
 local function setColor(color, alpha, b, a)
 	CandyBar:argCheck(color, 3, "string", "number")
-	local ctable = nil
+	local ctable = new()
+	local _, rr, gg, bb, aa
 	if type(color) == "string" then
 		if not paint then
 			CandyBar:error("You need the PaintChips-2.0 library if you don't pass in RGB pairs as colors.")
@@ -517,28 +518,22 @@ local function setColor(color, alpha, b, a)
 			return
 		end
 		CandyBar:argCheck(alpha, 4, "number", "nil")
-		ctable = {}
-		local _
-		_, ctable[1], ctable[2], ctable[3] =  paint:GetRGBPercent(color)
-		if alpha then
-			ctable[4] = alpha
-		else
-			ctable[4] = 1
-		end
+		_, rr, gg, bb = paint:GetRGBPercent(color)
+		aa = alpha and alpha or 1
 	else
 		CandyBar:argCheck(alpha, 4, "number")
 		CandyBar:argCheck(b, 5, "number")
 		CandyBar:argCheck(a, 6, "number", "nil")
-		ctable = {}
-		ctable[1], ctable[2], ctable[3] = color, alpha, b
-		if a then
-			ctable[4] = a
-		else
-			ctable[4] = 1
-		end
+		rr, gg, bb = color, alpha, b
+		aa = a and a or 1 
 	end
+	tinsert(ctable,rr)
+	tinsert(ctable,gg)
+	tinsert(ctable,bb)
+	tinsert(ctable,aa)
 	return ctable
 end
+
 
 -- Set the color of the bar
 -- Args: name - the candybar name
@@ -1086,7 +1081,7 @@ function CandyBar:RegisterWithGroup(name, group)
 
 	CandyBar:UnregisterWithGroup(name)
 
-	table.insert(gtable.bars, name)
+	tinsert(gtable.bars, name)
 	-- CandyBar.groups[group].bars[name] = name
 	handler.group = group
 	CandyBar:UpdateGroup(group)
@@ -1423,10 +1418,10 @@ function CandyBar:Update(name)
 			end
 			if gstart and gend then
 				-- calculate new gradient
-				currentGradient = {0,0,0,0}
+				currentGradient = new()
 				for i = 1, 4 do
 					-- these may be the same.. but I'm lazy to make sure.
-					currentGradient[i] = gstart[i]*(1-gp) + gend[i]*(gp)
+					tinsert(currentGradient, gstart[i]*(1-gp) + gend[i]*(gp))
 				end
 				cachedgradient[handler.gradientid][p] = currentGradient
 			end
@@ -1644,7 +1639,7 @@ function CandyBar:ReleaseBarFrame(name)
 		return
 	end
 	handler.frame:Hide()
-	table.insert(CandyBar.framepool, handler.frame)
+	tinsert(CandyBar.framepool, handler.frame)
 	return true
 end
 
