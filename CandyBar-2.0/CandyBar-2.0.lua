@@ -1,6 +1,6 @@
 --[[
 Name: CandyBar-2.0
-Revision: 16003
+Revision: 16012
 Author: Ammo (wouter@muze.nl) 
 Backport to vanilla: laytya (@gmail.com)
 Website: https://github.com/laytya/LibCandyBar/
